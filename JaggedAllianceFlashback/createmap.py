@@ -1,4 +1,8 @@
 from __future__ import print_function
+from builtins import filter
+from builtins import str
+from builtins import chr
+from builtins import range
 """
 Created on September 31, 2014
 @author: sbobovyc
@@ -40,11 +44,11 @@ if __name__ == '__main__':
         # filter for map tiles
         pattern = "^[a-z][0-9]*\.png"
         test = re.compile(pattern)
-        files = filter(test.search, onlyfiles)
+        files = list(filter(test.search, onlyfiles))
 
         #print(files)
         max_row = ord(max(files)[0]) - ord('a')
-        columns = map(lambda x: int(x[1:].split('.')[0]), files)
+        columns = [int(x[1:].split('.')[0]) for x in files]
         max_column = max(columns)
         print("max col: ", max_column)
 

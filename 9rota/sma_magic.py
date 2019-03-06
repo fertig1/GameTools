@@ -14,7 +14,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
+from __future__ import print_function
 
+from builtins import hex
+from builtins import range
+from builtins import object
 import argparse
 import struct
 import os
@@ -32,7 +36,7 @@ class File(object):
     def create(self, file_pointer, deflate=True):
         directory = os.path.dirname(self.path)
         try: os.makedirs(directory)
-        except OSError, err:
+        except OSError as err:
             # Reraise the error unless it's about an already existing directory 
             if err.errno != errno.EEXIST or not os.path.isdir(directory): 
                 raise
@@ -57,13 +61,13 @@ class SMA(object):
         with open(path, "rb") as f:
             self.magic, = struct.unpack("3s", f.read(3))
             self.version, = struct.unpack("<H", f.read(2))
-            print self.magic, self.version
+            print(self.magic, self.version)
             if self.version != 2:
-                print "Wrong version detected!"
+                print("Wrong version detected!")
                 sys.exit()
 
             self.num_files, = struct.unpack("<I", f.read(4))
-            print "Number of files:", self.num_files
+            print("Number of files:", self.num_files)
 
             self.unknown, = struct.unpack("<I", f.read(4))
 
@@ -75,7 +79,7 @@ class SMA(object):
                 offset, = struct.unpack("<I", f.read(4))
                 # unk1 is not adler32 or crc32
                 if verbose:
-                    print "%s, unknown %s, file size %s, offset: %s" % (path,  hex(unk1), hex(file_size), hex(offset))
+                    print("%s, unknown %s, file size %s, offset: %s" % (path,  hex(unk1), hex(file_size), hex(offset)))
                 
                 self.files.append(File(path, offset, file_size, unk1))
 
@@ -102,12 +106,12 @@ class SMA(object):
         
         # calculate first file offset based on header size
         offset = len(byte_buffer) + total_filepath_lengths + 13*len(self.files)
-        print total_filepath_lengths, hex(offset)
+        print(total_filepath_lengths, hex(offset))
 
         for fil in self.files:
             fil.offset = offset
             offset += fil.size
-            print fil.path, hex(fil.offset)
+            print(fil.path, hex(fil.offset))
             byte_buffer += struct.pack("<B%isIII" % len(fil.path), len(fil.path), fil.path, fil.size, fil.unk, fil.offset)
 
         with open(output_file, "wb") as f_out:

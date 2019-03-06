@@ -1,8 +1,12 @@
+from __future__ import print_function
+from builtins import str
+from builtins import range
+from builtins import object
 import os
 import sys
 import struct
 
-class entry:
+class entry(object):
     def __init__(self):
         self.RDB_id = None
         self.filename_length = None
@@ -12,11 +16,11 @@ class entry:
         self.RDB_id, self.filename_length = struct.unpack("<II", file_pointer.read(8))
         self.filename = file_pointer.read(self.filename_length).strip('\0')
         if verbose:
-            print "\tRDB id: %i, File name: %s" % (self.RDB_id, str(self.filename).strip('\0'))
+            print("\tRDB id: %i, File name: %s" % (self.RDB_id, str(self.filename).strip('\0')))
             pass
         return self
 
-class types:
+class types(object):
     def __init__(self):
         self.RDB_type = None
         self.num_entries = None
@@ -25,12 +29,12 @@ class types:
     def unpack(self, file_pointer, verbose=False):
         self.RDB_type, self.num_entries = struct.unpack("<II", file_pointer.read(8))
         if verbose:
-            print "RDB type: %i, Num entries: %i" % (self.RDB_type, self.num_entries)
+            print("RDB type: %i, Num entries: %i" % (self.RDB_type, self.num_entries))
         for i in range(0, self.num_entries):
             self.filename_entries.append(entry().unpack(file_pointer, verbose))
         return self
                                         
-class mapping:
+class mapping(object):
     def __init__(self, filepath=None):
         self.filepath = filepath
         self.RDB_type = None
@@ -45,7 +49,7 @@ class mapping:
 
     def open(self, filepath=None):
         if filepath == None and self.filepath == None:
-            print "File path is empty"
+            print("File path is empty")
             return
         if self.filepath == None:
             self.filepath = filepath    
@@ -55,9 +59,9 @@ class mapping:
             self.RDB_type, self.RDB_id, self.unknown = struct.unpack("<III", f.read(12))
             self.num_types, = struct.unpack("<I", f.read(4))
             if verbose:
-                print "RDB type", self.RDB_type
-                print "RDB id", self.RDB_id
-                print "Num types", self.num_types
+                print("RDB type", self.RDB_type)
+                print("RDB id", self.RDB_id)
+                print("Num types", self.num_types)
             for tp in range(0, self.num_types):
                 self.types.append(types().unpack(f, verbose))
                 

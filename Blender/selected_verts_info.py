@@ -1,6 +1,7 @@
 """ @author Stanislav Bobovych
 @detail Tested with Blender 2.75
 """
+from __future__ import print_function
 import bpy
 
 print("\n"*5)
@@ -8,7 +9,7 @@ bpy.ops.object.mode_set(mode = 'OBJECT')
 if bpy.context.object.type == "MESH":    
     object = bpy.context.object
     # print all vertex groups for each object
-    print(object.vertex_groups.keys())
+    print(list(object.vertex_groups.keys()))
     for group in object.vertex_groups:
         print("Group %i, name %s" % (group.index, group.name))
 
@@ -23,15 +24,15 @@ if bpy.context.object.type == "MESH":
     mesh = bpy.context.object.data
     selected_verts = [v for v in mesh.vertices if v.select]
     for v in selected_verts:
-        print("Vertex index: %i," % v.index, "Coordinate:", v.co)
-        print("\t\t Normal:", v.normal)
+        print(("Vertex index: %i," % v.index, "Coordinate:", v.co))
+        print(("\t\t Normal:", v.normal))
         for g in v.groups:
-            print("\tGroup: %i," % g.group, object.vertex_groups[g.group].name, "Weight:", g.weight)
+            print(("\tGroup: %i," % g.group, object.vertex_groups[g.group].name, "Weight:", g.weight))
             
     selected_faces = [f for f in mesh.polygons if f.select]
     uv_layer = mesh.uv_layers.active.data
     for f in selected_faces:
-        print("Face index: %i," % f.index, "vertex indices:", f.vertices[:])
+        print(("Face index: %i," % f.index, "vertex indices:", f.vertices[:]))
         for li in f.loop_indices:
             vi = mesh.loops[li].vertex_index
             uv = uv_layer[li].uv

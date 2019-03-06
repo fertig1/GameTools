@@ -13,13 +13,17 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
 from __future__ import print_function
 from __future__ import division
+from future import standard_library
+standard_library.install_aliases()
+from builtins import range
+from builtins import object
 import argparse
 import struct
 import os
 import errno
 import sys
 try:
-    from StringIO import StringIO
+    from io import StringIO
 except ImportError:
     from io import BytesIO
 
@@ -29,7 +33,7 @@ def update_progress(progress):
     sys.stdout.flush()
 
 
-class BrzFile:
+class BrzFile(object):
     def __init__(self, path):
         self.path = path
         self.file_count = 0

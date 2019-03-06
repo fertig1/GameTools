@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import sys
 import idx
@@ -11,7 +12,7 @@ if __name__ == "__main__":
 
     # extract filemap from rdbdata 
     mapfile_index = idx_file.get_indeces(1000010)[1]
-    print "Filemap found at index", mapfile_index
+    print("Filemap found at index", mapfile_index)
     filename, offset, size = idx_file.get_entry_details(mapfile_index)
 
     data = None
@@ -30,7 +31,7 @@ if __name__ == "__main__":
     # search for all files in filemap and dump them
     for tp in fm.types:
         if tp.num_entries > 0:
-            print tp.RDB_type
+            print(tp.RDB_type)
             current_type_dict = idx_file.get_indeces(tp.RDB_type)
             for fl in tp.filename_entries:
                 try:

@@ -19,7 +19,14 @@ Created on November 25, 2011
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+from __future__ import division
+from __future__ import print_function
 
+from builtins import str
+from builtins import hex
+from builtins import range
+from builtins import object
+from past.utils import old_div
 import struct
 import math
 from PIL import Image
@@ -52,9 +59,9 @@ RSB_Magic = {4444:RSB_Magick4, "RGB4444":RSB_Magick4,
 RSB_Header_Offset = 0x1C
 
 def int2bcd(integer):    
-    a3 = integer/1000
-    a2 = (integer - 1000*a3)/100
-    a1 = (integer - 1000*a3 - 100* a2) / 10
+    a3 = old_div(integer,1000)
+    a2 = old_div((integer - 1000*a3),100)
+    a1 = old_div((integer - 1000*a3 - 100* a2), 10)
     a0 = (integer - 1000*a3 - 100* a2 - 10*a1)
     
     return a3, a2, a1, a0
@@ -62,7 +69,7 @@ def int2bcd(integer):
 def float2int(flt):
     return int(math.ceil(flt))
 
-class RSB_File:    
+class RSB_File(object):    
     
     #TODO make the constructor figure out if this is an image
     def __init__(self, filepath=None, peek=False, width=None, height=None, RSB_Format=None, PIL_buffer=None):
@@ -81,7 +88,7 @@ class RSB_File:
     
     def open(self, filepath=None, peek=False):
         if filepath == None and self.filepath == None:
-            print "Filepath is empty"
+            print("Filepath is empty")
             return
         if filepath == None:
             filepath = self.filepath
@@ -109,7 +116,7 @@ class RSB_File:
                         for x in range(0, self.width):
                             index = 0x2B+self.width*y*2+x*2
                             if RSB_debug:
-                                print hex(index), x,y
+                                print(hex(index), x,y)
                             color, = struct.unpack('<H', f[index:index+2])
                             
                             alpha = float2int( ((color & 0xF000) >> 12) / 15.0 * 255.0 )
@@ -117,7 +124,7 @@ class RSB_File:
                             green = float2int( ((color & 0x00F0) >> 4) / 15.0 * 255.0 )
                             blue = float2int( (color & 0x000F) / 15.0 *255.0)
                             
-                            print alpha,red,green,blue
+                            print(alpha,red,green,blue)
                             pixels[x,y] = (red,green,blue,alpha)    
 
             elif self.magicNumber == RSB_Magick1 or self.magicNumber == RSB_Magick4 or self.magicNumber == RSB_Magick5 or self.magicNumber == RSB_Magick6:                
@@ -138,7 +145,7 @@ class RSB_File:
                         for x in range(0, self.width):
                             index = RSB_Header_Offset+self.width*y*2+x*2
                             if RSB_debug:
-                                print hex(index), x,y
+                                print(hex(index), x,y)
                             color, = struct.unpack('<H', f[index:index+2])
                             #quick version
 #                            red = (color & 0xF800) >> 7
@@ -160,7 +167,7 @@ class RSB_File:
                         for x in range(0, self.width):
                             index = RSB_Header_Offset+self.width*y*4+x*4
                             if RSB_debug:
-                                print hex(index), x,y
+                                print(hex(index), x,y)
                             color, = struct.unpack('<I', f[index:index+4])
                             
                             alpha = color & 0x000000FF 
@@ -180,7 +187,7 @@ class RSB_File:
                         for x in range(0, self.width):
                             index = RSB_Header_Offset+self.width*y*3+x*3                            
                             if RSB_debug:
-                                print hex(index), x,y
+                                print(hex(index), x,y)
                             red, = struct.unpack('<B', f[index])
                             green, = struct.unpack('<B', f[index+1])
                             blue, = struct.unpack('<B', f[index+2])                                                                                 
@@ -197,7 +204,7 @@ class RSB_File:
                         for x in range(0, self.width):
                             index = RSB_Header_Offset+self.width*y*2+x*2
                             if RSB_debug:
-                                print hex(index), x,y
+                                print(hex(index), x,y)
                             color, = struct.unpack('<H', f[index:index+2])
                             
                             alpha = float2int( ((color & 0xF000) >> 12) / 15.0 * 255.0 )
@@ -207,11 +214,11 @@ class RSB_File:
                             
                             pixels[x,y] = (red,green,blue,alpha)                                                                           
                 else:
-                    print "RSB type is not supported"                    
+                    print("RSB type is not supported")                    
                     return
                     
             else:
-                print "File is not of type RSB."
+                print("File is not of type RSB.")
                 return
     
     def rsb2img(self, filepath):
@@ -232,14 +239,14 @@ class RSB_File:
         self.save(RSB_Format, filepath_rsb)
         
     def is_format_supported(self, RSB_Format):
-        return RSB_Formats.has_key(RSB_Format) 
+        return RSB_Format in RSB_Formats 
     
     def save(self, RSB_Format, filepath):        
         if RSB_Format.isdigit():
             RSB_Format = int(RSB_Format)
                          
         if not self.is_format_supported(RSB_Format):            
-            print "Unsupported RSB format."
+            print("Unsupported RSB format.")
             return
         
         if type(RSB_Format)== str:
@@ -256,7 +263,7 @@ class RSB_File:
             header_struct = struct.Struct('<IIIxxxIIIIIBBBBBBBB')
         header_packed = header_struct.pack(*header)
 
-        print 'Header         :', header
+        print('Header         :', header)
         #print 'Format string  :', header_struct.RSB_Format
         #print 'Uses           :', header_struct.size, 'bytes'
         #print 'Packed Value   :', binascii.hexlify(header_packed) 
@@ -393,22 +400,22 @@ class RSB_File:
                     blue = int((blue / 255.0) * 15.0) 
                                         
                     color = alpha | red | green | blue
-                    print "alpha",hex(alpha) 
-                    print "red", hex(red)
-                    print "green", hex(green)
-                    print hex(color)
+                    print("alpha",hex(alpha)) 
+                    print("red", hex(red))
+                    print("green", hex(green))
+                    print(hex(color))
                     data.append(color)
                     
             data_struct = struct.Struct("<%iH" % len(data))                    
         else:
-            print "File is not of type RSB."
+            print("File is not of type RSB.")
             return
 
      
         data_packed = data_struct.pack(*data)            
         #print 'Data RSB_Format string  :', data_struct.RSB_Format
-        print 'Data uses      :', data_struct.size, 'bytes'            
-        print 
+        print('Data uses      :', data_struct.size, 'bytes')            
+        print() 
                                
         with open(filepath, "wb") as f:        
             f.write(header_packed)

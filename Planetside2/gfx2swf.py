@@ -17,6 +17,7 @@ Created on December 19, 2012
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+from __future__ import print_function
 
 import argparse
 import os
@@ -52,9 +53,9 @@ if __name__ == "__main__":
             swf_filepath = os.path.abspath(outfile)
             
         
-        print "Converting %s to %s" % (gfx_filepath, swf_filepath)
+        print("Converting %s to %s" % (gfx_filepath, swf_filepath))
         gfx2swf(gfx_filepath, swf_filepath)
         
     else:
-        print "Nothing happened"
+        print("Nothing happened")
         parser.print_help()        

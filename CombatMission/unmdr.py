@@ -1,5 +1,10 @@
 from __future__ import print_function
+from __future__ import division
 
+from builtins import hex
+from builtins import range
+from past.utils import old_div
+from builtins import object
 """@package unmdr
 Documentation for this module. 
 More details.
@@ -51,7 +56,7 @@ def print4x4matrix(matrix):
 ####
 
 
-class MDR_Object:
+class MDR_Object(object):
     """MDR object
     """
     def __init__(self, name):
@@ -196,7 +201,7 @@ def dump_model(base_name, num_models, f, model_number, outdir, dump=True, verbos
         #raise ValueError(error_message)
         print(error_message)
     print("# Start unknown section", "0x%x" % f.tell())    
-    for i in range(0, int(0xB0/4)):
+    for i in range(0, int(old_div(0xB0,4))):
         unk, = struct.unpack("f", f.read(4))
         if verbose:
             print("# [%i] %f" % (i, unk))
@@ -205,10 +210,10 @@ def dump_model(base_name, num_models, f, model_number, outdir, dump=True, verbos
     ###############################################
     print("# Start face vertex indices")
     face_count, = struct.unpack("<I", f.read(4))
-    print("# Face count:", face_count/3)
+    print("# Face count:", old_div(face_count,3))
     manifest = {u'model': base_name, u'sub_model': submodel_name, u'vertex_index_offset' : f.tell()}
     
-    for i in range(0, int(face_count/3)):
+    for i in range(0, int(old_div(face_count,3))):
         if not dump:
             f.read(6)
         else:
@@ -221,11 +226,11 @@ def dump_model(base_name, num_models, f, model_number, outdir, dump=True, verbos
     ###############################################
     print("# Start UVs")
     uv_in_section, = struct.unpack("<I", f.read(4))
-    print("# UV in section:", uv_in_section/2)
+    print("# UV in section:", old_div(uv_in_section,2))
 
     manifest[u'vertex_uv_offset'] = f.tell()
     
-    for i in range(0, int(uv_in_section/2)):
+    for i in range(0, int(old_div(uv_in_section,2))):
         if not dump:
             f.read(8)
         else:
@@ -288,7 +293,7 @@ def dump_model(base_name, num_models, f, model_number, outdir, dump=True, verbos
             if length != 0:
                 read_matrix(f)
             print("#End of sub-meta", "0x%x" % f.tell())
-        for i in range(int(0x68/4)):
+        for i in range(int(old_div(0x68,4))):
             print(struct.unpack("f", f.read(4)))
         print("# Unknown meta finished", "0x%x" % f.tell())
 
@@ -313,7 +318,7 @@ def dump_model(base_name, num_models, f, model_number, outdir, dump=True, verbos
         print(error_message)
 
     print("# Start unknown section of 176 bytes", "0x%x" % f.tell())
-    for i in range(0, int(0xB0/4)):
+    for i in range(0, int(old_div(0xB0,4))):
         unk, = struct.unpack("f", f.read(4))
         if verbose:
             print("# [%i] %i" % (i, unk))
@@ -322,10 +327,10 @@ def dump_model(base_name, num_models, f, model_number, outdir, dump=True, verbos
     ###############################################
     print("# Start vertices")
     vertex_floats, = struct.unpack("<I", f.read(4))
-    print("# Vertex count:", vertex_floats/3)
+    print("# Vertex count:", old_div(vertex_floats,3))
     manifest[u'vertex_offset'] = f.tell()
     
-    for i in range(0, int(vertex_floats/3)):
+    for i in range(0, int(old_div(vertex_floats,3))):
         if not dump:
             f.read(12)
         else:
@@ -336,10 +341,10 @@ def dump_model(base_name, num_models, f, model_number, outdir, dump=True, verbos
     
     print("# Start vertex normals")
     normal_count, = struct.unpack("<I", f.read(4))
-    print("# Normals count:", normal_count/3) # 3 per vertex
+    print("# Normals count:", old_div(normal_count,3)) # 3 per vertex
     manifest[u'vertex_normals_offset'] = f.tell()
 
-    for i in range(0, int(normal_count/3)):
+    for i in range(0, int(old_div(normal_count,3))):
         if not dump:
             f.read(6)
         else:

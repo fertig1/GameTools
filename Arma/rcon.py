@@ -1,7 +1,11 @@
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
 import socket
 import zlib
 import struct
-import Queue
+import queue
 import threading
 import binascii
 
@@ -38,10 +42,10 @@ class rconPacket(object):
     def deflateMessage(self, data):
         magick,crc,trailer,messageType = struct.unpack("<2siBB", data[0:8])
         print("Got %s,%x,%x" % (magick, crc,messageType))
-        print("size of data: ",len(data))
+        print(("size of data: ",len(data)))
         if messageType == RCON_LOGIN:
             status, = struct.unpack("B", data[8])
-            print("status ", status)
+            print(("status ", status))
             if status == LOGIN_GOOD:
                 print("log in good")
                 return (LOGIN_GOOD, "")
@@ -61,7 +65,7 @@ class recieveHandler(threading.Thread):
     def __init__(self, sock, client):
         threading.Thread.__init__(self)
         self.sock = sock
-        self.queue = Queue.Queue()
+        self.queue = queue.Queue()
         self.client = client
         self.alive = threading.Event()
         self.alive.set()
@@ -70,7 +74,7 @@ class recieveHandler(threading.Thread):
         while self.alive.isSet():
             print(self.sock.getsockname())
             data, addr = self.sock.recvfrom(1024) # buffer size is 1024 bytes
-            print "received message:", binascii.hexlify(data), "||", data
+            print("received message:", binascii.hexlify(data), "||", data)
             p = rconPacket()
             resultType, data = p.deflateMessage(data)
             if resultType == PRINT_MSG:
@@ -87,7 +91,7 @@ class sendHandler(threading.Thread):
         self.sock = sock
         self.ip = UDP_IP
         self.port = UDP_PORT
-        self.queue = Queue.Queue()
+        self.queue = queue.Queue()
         self.client = client
         self.alive = threading.Event()
         self.alive.set()
@@ -129,8 +133,8 @@ class rconClient(object):
     def sayAll(self, message):
         sayAllPacket = rconPacket()
         msg = sayAllPacket.makeMessage(RCON_COMMAND, (self.sequenceNumber, "say -1 " + message)) #FIXME sequence number not incremented
-        print("sequence number is ", self.sequenceNumber)
-        print("will send ", binascii.hexlify(msg))
+        print(("sequence number is ", self.sequenceNumber))
+        print(("will send ", binascii.hexlify(msg)))
         self.sendHandler.queue.put(msg)
 
     def keepAlive(self):

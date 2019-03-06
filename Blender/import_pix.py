@@ -1,3 +1,4 @@
+from __future__ import print_function
 # ##### BEGIN GPL LICENSE BLOCK #####
 #
 # This program is free software; you can redistribute it and/or
@@ -18,6 +19,8 @@
 
 # <pep8 compliant>
 
+from builtins import next
+from builtins import range
 import bpy
 import csv
 import mathutils
@@ -199,8 +202,8 @@ def importCSV(filepath=None, mirror_x=False, vertex_order=True, global_matrix=No
                 normal_dict[i] = (0, 0, 0)
 
         # dictionary sorted by key
-        vertex_dict = OrderedDict(sorted(vertex_dict.items(), key=lambda t: t[0]))
-        normal_dict = OrderedDict(sorted(normal_dict.items(), key=lambda t: t[0]))
+        vertex_dict = OrderedDict(sorted(list(vertex_dict.items()), key=lambda t: t[0]))
+        normal_dict = OrderedDict(sorted(list(normal_dict.items()), key=lambda t: t[0]))
 
         for key in vertex_dict:
             vertices.append(list(vertex_dict[key]))

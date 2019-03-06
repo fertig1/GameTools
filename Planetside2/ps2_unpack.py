@@ -17,7 +17,10 @@ Created on October 7, 2012
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+from __future__ import print_function
 
+from builtins import hex
+from builtins import range
 import argparse
 import struct
 import os
@@ -38,9 +41,9 @@ def dump_section(fd, offset, outdir, file_filter=None, verbose=False, dry=False)
     next_section_offset, = struct.unpack('>I', f.read(4))
     entries, = struct.unpack('>I', f.read(4))
     if verbose:
-        print "Next section:", hex(next_section_offset)    
-        print "Entries:", entries
-        print "+++++++++++++++++++++++++++++"
+        print("Next section:", hex(next_section_offset))    
+        print("Entries:", entries)
+        print("+++++++++++++++++++++++++++++")
 
     for i in range(0, entries):
         length, = struct.unpack('>I', f.read(4))
@@ -51,13 +54,13 @@ def dump_section(fd, offset, outdir, file_filter=None, verbose=False, dry=False)
         crc32, = struct.unpack('>I', f.read(4))
 
         if verbose:
-            print "File", i
-            print "Length of filename:", length
-            print filename
-            print "File offset:", hex(offset)
-            print "File legnth:", hex(file_length)
-            print "CRC32:", hex(crc32).rstrip('L')
-            print "+++++++++++++++++++++++++++++"
+            print("File", i)
+            print("Length of filename:", length)
+            print(filename)
+            print("File offset:", hex(offset))
+            print("File legnth:", hex(file_length))
+            print("CRC32:", hex(crc32).rstrip('L'))
+            print("+++++++++++++++++++++++++++++")
         # dumpt out file
         if not dry:
             match = True
@@ -95,16 +98,16 @@ if __name__ == "__main__":
 
     if file != None and info != False:
         info_filepath = os.path.abspath(file)
-        print "Not implemented yet."
+        print("Not implemented yet.")
             
     elif file != None:      
         extension = os.path.splitext(file)[1][1:].strip()
         pack_filepath = os.path.abspath(file)
         
-        print "Unpacking %s" % pack_filepath
+        print("Unpacking %s" % pack_filepath)
         
         if extension != "pack":
-            print "File is not a .pack" 
+            print("File is not a .pack") 
 
         if outdir != None:            
             output_filepath = os.path.abspath(outdir)   
@@ -112,12 +115,12 @@ if __name__ == "__main__":
             output_filepath = os.path.splitext(os.path.basename(pack_filepath))[0]
 
         if not os.path.exists(output_filepath) and not dry:
-            print "Creating", output_filepath
+            print("Creating", output_filepath)
             os.makedirs(output_filepath)
 
         f = open(pack_filepath, "rb")
         next_section_offset = 0x0
-        print "Dumping..."
+        print("Dumping...")
         while(1):
             next_section_offset = dump_section(f, next_section_offset, output_filepath, file_filter, verbose, dry)
             if next_section_offset == 0x0:
@@ -126,7 +129,7 @@ if __name__ == "__main__":
         
                 
     else:
-        print "Nothing happened"
+        print("Nothing happened")
         parser.print_help()
     
 

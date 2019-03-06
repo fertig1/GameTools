@@ -14,7 +14,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
+from __future__ import division
+from __future__ import print_function
 
+from builtins import range
+from past.utils import old_div
 import argparse
 import sys
 import struct
@@ -102,8 +106,8 @@ if __name__ == '__main__':
                             else:
                                 faces[i] = [idx2, idx1, idx0]
 
-                        f.seek(f.tell() - int(2*(data_size/3)))
-                        if f.tell() + 2*(data_size/3) == file_size:
+                        f.seek(f.tell() - int(2*(old_div(data_size,3))))
+                        if f.tell() + 2*(old_div(data_size,3)) == file_size:
                             break
                     elif args.mode == "TRIANGLES":
                         faces[i] = [idx0, idx1, idx2]
@@ -125,12 +129,12 @@ if __name__ == '__main__':
                     if not buf:
                         break
                     u, v, = struct.unpack("ff", buf)
-                    print("vt", u, v)
+                    print(("vt", u, v))
                     byte_count += 2 * 4
                     f.seek(next_read_address)
-            for key, value in faces.items():
+            for key, value in list(faces.items()):
                 print(INDEX_FORMAT2 % (value[0] + 1, value[0] + 1, value[1] + 1, value[1] + 1, value[2] + 1, value[2] + 1))  # wavefront obj index starts at 1
-        print("# number of bytes", byte_count)
+        print(("# number of bytes", byte_count))
     elif extension == "csv":
         df = pd.read_csv(args.file)
         csv_header = ast.literal_eval(args.csv_header)
@@ -179,13 +183,13 @@ if __name__ == '__main__':
                 vertices[idx2] = [x, y, z]
                 faces[f] = [idx0, idx1, idx2]
                 f += 1
-        for key, value in faces.items():
+        for key, value in list(faces.items()):
             print(INDEX_FORMAT % (value[0]+1, value[1]+1, value[2]+1))  # wavefront obj index starts at 1
-        for key, value in vertices.items():
+        for key, value in list(vertices.items()):
             print(VERTEX_FORMAT % (value[0], value[1], value[2]))
     elif extension == "html":
         df = pd.read_html(path, header=None)[0]
-        print("#", df.shape)
+        print(("#", df.shape))
         if args.type == "indices":
             if args.mode == "TRIANGLE_STRIP":
                 for i, row in df.iterrows():

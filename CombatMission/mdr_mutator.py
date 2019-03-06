@@ -16,6 +16,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
+from __future__ import print_function
+from builtins import hex
+from builtins import object
 import struct
 import os
 import sys
@@ -24,7 +27,7 @@ import json
 import re
 
 
-class SimpleOBJ:
+class SimpleOBJ(object):
 
     def __init__(self, path):
         self.index_array = []
@@ -64,7 +67,7 @@ if __name__ == "__main__":
     with open(args.file, "r") as f:
         obj = json.loads(f.read())
         name = obj[0]
-        print("Name", name)
+        print(("Name", name))
     with open(os.path.join(os.path.dirname(args.file), name + ".mdr"), "rb") as f_mdr_orig:
         bindata = f_mdr_orig.read()
     with open(os.path.join(args.outdir, name+".mdr"), "wb") as f_mdr:
@@ -75,27 +78,27 @@ if __name__ == "__main__":
             obj = SimpleOBJ(os.path.join(os.path.dirname(args.file), obj_name))
             
             f_mdr.seek(sub_module[u'vertex_index_offset'])
-            print("Writing vert index at", hex(f_mdr.tell()))
+            print(("Writing vert index at", hex(f_mdr.tell())))
             for vi in obj.index_array:
                 new_vi = struct.pack("<HHH", *vi)
                 f_mdr.write(new_vi)
-            print("End vert index at", hex(f_mdr.tell()))
+            print(("End vert index at", hex(f_mdr.tell())))
 
             f_mdr.seek(sub_module[u'vertex_uv_offset'])
-            print("Writing uv at", hex(f_mdr.tell()))
+            print(("Writing uv at", hex(f_mdr.tell())))
             for uv in obj.uv_array:
                 new_uv = struct.pack("ff", *uv)
                 f_mdr.write(new_uv)
-            print("End uv at", hex(f_mdr.tell()))
+            print(("End uv at", hex(f_mdr.tell())))
 
             f_mdr.seek(sub_module[u'vertex_offset'])
-            print("Writing verts at", hex(f_mdr.tell()))
+            print(("Writing verts at", hex(f_mdr.tell())))
             for vert in obj.vertex_array:
                 new_vertex = struct.pack("fff", scale*vert[0], scale*vert[1], scale*vert[2])
                 f_mdr.write(new_vertex)
-            print("End vert at", hex(f_mdr.tell()))
+            print(("End vert at", hex(f_mdr.tell())))
 
-            if u'material' in sub_module.keys():
+            if u'material' in list(sub_module.keys()):
                 for mat in sub_module[u'material']:
                     f_mdr.seek(mat[0][u'offset'])
                     bindata = struct.pack("ff", *mat[1][u'unknown_constants'])

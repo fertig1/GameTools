@@ -1,5 +1,10 @@
 from __future__ import print_function
+from __future__ import division
 
+from builtins import hex
+from builtins import range
+from builtins import object
+from past.utils import old_div
 import struct
 
 # constants
@@ -7,7 +12,7 @@ PLYMAGICK = "EPLYBNDS"
 SUPPORTED_ENTRY = ["SKIN", "MESH", "VERT", "INDX"]
 SUPPORTED_FORMAT = [0x0644, 0x0604, 0x0404, 0x0704, 0x0744, 0x0C14]
 
-class PLY:
+class PLY(object):
     def __init__(self, path, translate_uv_y=False):
         self.path = path
         self.translate_uv_y = translate_uv_y
@@ -90,7 +95,7 @@ class PLY:
                 if entry == SUPPORTED_ENTRY[3]: #INDX
                     idx_count, = struct.unpack("<I", f.read(4))
                     print("Indeces:", idx_count)
-                    for i in range(0, idx_count/3):
+                    for i in range(0, old_div(idx_count,3)):
                         i0,i1,i2 = struct.unpack("<HHH", f.read(6))
                         if verbose:
                             print("Face %i:" % i,i0,i1,i2)
@@ -113,7 +118,7 @@ class PLY:
             for n in self.normals:
                 f.write('{:s} {:f} {:f} {:f}\n'.format("vn", *n))
             for idx in self.indeces:
-                new_idx = map(lambda x: x+1, idx)
+                new_idx = [x+1 for x in idx]
                 # change vertex index order by swapping the first and last indeces
                 f.write('{:s} {:d}/{:d}/{:d} {:d}/{:d}/{:d} {:d}/{:d}/{:d}\n'.format("f", new_idx[2], new_idx[2],
                 new_idx[2], new_idx[1], new_idx[1], new_idx[1], new_idx[0], new_idx[0], new_idx[0]))

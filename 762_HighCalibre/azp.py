@@ -11,6 +11,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
+from __future__ import print_function
+from builtins import hex
+from builtins import range
+from builtins import object
 import argparse
 import struct
 import zlib
@@ -20,7 +24,7 @@ import errno
 CIPHER_KEY = 0xF69DA025
 
 
-class AZP_Data:
+class AZP_Data(object):
     def __init__(self, name, offset, uncompressed_size, compressed_size):
         self.name = name
         self.offset = offset
@@ -94,12 +98,12 @@ if __name__ == '__main__':
         with open(args.filepath, "rb") as f:
             # read header
             header, ver = struct.unpack("3sb", f.read(4))
-            print(header, ver)
+            print((header, ver))
             data_offset, game_version = struct.unpack("II", f.read(8))
-            print("Data offset:", hex(data_offset))
-            print("Game version:", game_version)
+            print(("Data offset:", hex(data_offset)))
+            print(("Game version:", game_version))
             num_files, = struct.unpack("I", f.read(4))
-            print("Number of files:", num_files)
+            print(("Number of files:", num_files))
 
             next_key = CIPHER_KEY
             header = []
@@ -110,31 +114,31 @@ if __name__ == '__main__':
                 clear_data, next_key = symmetric_cipher(ciphered_data, 4, next_key)
                 filename_length, = struct.unpack("I", clear_data)
                 if args.verbose:
-                    print("File name length:", filename_length)
+                    print(("File name length:", filename_length))
 
                 ciphered_data = f.read(filename_length)
                 clear_data, next_key = symmetric_cipher(ciphered_data, filename_length, next_key)
                 filename = clear_data.decode("latin-1")
                 if args.verbose:
-                    print("File name:", filename)
+                    print(("File name:", filename))
 
                 ciphered_data = f.read(4)
                 clear_data, next_key = symmetric_cipher(ciphered_data, 4, next_key)
                 data_offset, = struct.unpack("I", clear_data)
                 if args.verbose:
-                    print("Data offset:", hex(data_offset))
+                    print(("Data offset:", hex(data_offset)))
 
                 ciphered_data = f.read(4)
                 clear_data, next_key = symmetric_cipher(ciphered_data, 4, next_key)
                 compressed_size, = struct.unpack("I", clear_data)
                 if args.verbose:
-                    print("Compressed size:", compressed_size)
+                    print(("Compressed size:", compressed_size))
 
                 ciphered_data = f.read(4)
                 clear_data, next_key = symmetric_cipher(ciphered_data, 4, next_key)
                 uncompressed_size, = struct.unpack("I", clear_data)
                 if args.verbose:
-                    print("Uncompressed size:", uncompressed_size)
+                    print(("Uncompressed size:", uncompressed_size))
 
                 header.append(AZP_Data(filename, data_offset, uncompressed_size, compressed_size))
 
@@ -172,7 +176,7 @@ if __name__ == '__main__':
                                  0)
                 entry.compressed_data = zlib.compress(data)
                 entry.compressed_size = len(entry.compressed_data)
-                print(entry.name, entry.uncompressed_size, entry.compressed_size)
+                print((entry.name, entry.uncompressed_size, entry.compressed_size))
                 header.append(entry)
 
         # compressed data

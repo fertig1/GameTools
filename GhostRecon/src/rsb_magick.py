@@ -19,6 +19,7 @@ Created on November 25, 2011
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+from __future__ import print_function
 
 import argparse
 import os
@@ -28,7 +29,7 @@ parser = argparse.ArgumentParser(description='Tool that can read, write and show
 
 parser.add_argument('file1', nargs='?', help='Input file')
 parser.add_argument('file2', nargs='?', help='Output file')
-parser.add_argument('RSB_Format', nargs='?', help="Output RSB RSB_Format. Supported formats:%s" % RSB_Magic.keys())
+parser.add_argument('RSB_Format', nargs='?', help="Output RSB RSB_Format. Supported formats:%s" % list(RSB_Magic.keys()))
 
 args = parser.parse_args()
 file1 = args.file1
@@ -38,12 +39,12 @@ RSB_Format = args.RSB_Format
 if file1 != None and file2 == None and os.path.splitext(file1)[1][1:].strip() == "rsb":
     info_filepath = os.path.abspath(file1)
     rsb_im = RSB_File(filepath=info_filepath, peek=True)        
-    print rsb_im
+    print(rsb_im)
     
 elif file1 != None and file2 != None and os.path.splitext(file1)[1][1:].strip() == "rsb" and \
         os.path.splitext(file2)[1][1:].strip() != "rsb":
     
-    print "Converting RSB to non-RSB format."
+    print("Converting RSB to non-RSB format.")
     rsb_filepath = os.path.abspath(file1)
     rsb_im = RSB_File(filepath=rsb_filepath)
     output_filepath = os.path.abspath(file2)
@@ -54,13 +55,13 @@ elif file1 != None and file2 != None and \
         os.path.splitext(file2)[1][1:].strip() == "rsb" and \
         RSB_Format != None:
     
-    print "Converting non-RSB to RSB format."
+    print("Converting non-RSB to RSB format.")
     im_filepath = os.path.abspath(file1)
     rsb_im = RSB_File()
     rsb_filepath = os.path.abspath(file2)
     rsb_im.img2rsb(RSB_Format, im_filepath, rsb_filepath)
     
 else:
-    print "Nothing happened"
+    print("Nothing happened")
     parser.print_help()
         

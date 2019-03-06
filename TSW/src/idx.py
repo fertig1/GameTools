@@ -14,12 +14,17 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
+from __future__ import print_function
 
+from builtins import str
+from builtins import hex
+from builtins import range
+from builtins import object
 import os
 import sys
 import struct
 
-class IDX_bundle_entry:
+class IDX_bundle_entry(object):
     def __init__(self):
         self.RDB_type = None
         self.RDB_id = None
@@ -28,9 +33,9 @@ class IDX_bundle_entry:
         #print hex(file_pointer.tell())
         self.RDB_type, self.RDB_id = struct.unpack("<II", file_pointer.read(8))
         if verbose:
-            print "\tRDB Type: %i RDB ID: %i" % (self.RDB_type, self.RDB_id)
+            print("\tRDB Type: %i RDB ID: %i" % (self.RDB_type, self.RDB_id))
         
-class IDX_bundle_data:
+class IDX_bundle_data(object):
     def __init__(self):
         self.name_length = None
         self.name = None
@@ -44,11 +49,11 @@ class IDX_bundle_data:
         self.num_entries /= 256
         
         if verbose:
-            print "Bundle name:",  self.name, "Entry count: ", self.num_entries
+            print("Bundle name:",  self.name, "Entry count: ", self.num_entries)
         for entry in range(0, self.num_entries):
             self.bundle_entries.append(IDX_bundle_entry().unpack(file_pointer, verbose))        
             
-class IDX_bundles:
+class IDX_bundles(object):
     def __init__(self):
         self.num_bundles = None
         self.bundle_data = []
@@ -56,12 +61,12 @@ class IDX_bundles:
     def unpack(self, file_pointer, verbose=False):
         self.num_bundles, = struct.unpack("<I", file_pointer.read(4))
         if verbose:
-            print "Number of bundles", self.num_bundles
+            print("Number of bundles", self.num_bundles)
         for bundle in range(0, self.num_bundles):
             self.bundle_data.append(IDX_bundle_data().unpack(file_pointer, verbose))
             file_pointer.read(1)
             
-class IDX_entry_details:
+class IDX_entry_details(object):
     def __init__(self):
         self.RDB_file_number = None
         self.unknown1 = None #Flags?
@@ -82,17 +87,17 @@ class IDX_entry_details:
         self.md5hash |= md5hash_lower
 
         if verbose:
-            print "\tRDB file number: %i" % (self.RDB_file_number)
-            print "\tFlags???: 0x%x" % (self.unknown1)
-            print "\tUnknown: 0x%x" % (self.unknown2)
-            print "\tUnknown: 0x%x" % (self.unknown3)
-            print "\tOffset in rdbdata file: 0x%x" % (self.rdbdata_offset)
-            print "\tLength of entry data: %i" % (self.entry_length)
-            print "\tMD5:", str(hex(self.md5hash)).strip('L')
+            print("\tRDB file number: %i" % (self.RDB_file_number))
+            print("\tFlags???: 0x%x" % (self.unknown1))
+            print("\tUnknown: 0x%x" % (self.unknown2))
+            print("\tUnknown: 0x%x" % (self.unknown3))
+            print("\tOffset in rdbdata file: 0x%x" % (self.rdbdata_offset))
+            print("\tLength of entry data: %i" % (self.entry_length))
+            print("\tMD5:", str(hex(self.md5hash)).strip('L'))
 
         return self
         
-class IDX_index:
+class IDX_index(object):
     def __init__(self):
         self.RDB_type = None
         self.RDB_id = None
@@ -100,10 +105,10 @@ class IDX_index:
     def unpack(self, file_pointer, verbose=False):
         self.RDB_type, self.RDB_id = struct.unpack("<II", file_pointer.read(8))
         if verbose:
-            print "\tRDB Type: %i RDB ID: %i" % (self.RDB_type, self.RDB_id)
+            print("\tRDB Type: %i RDB ID: %i" % (self.RDB_type, self.RDB_id))
         return self
             
-class IDX_index_header:
+class IDX_index_header(object):
     def __init__(self):
         self.magic = None       # IBDR
         self.version = None     # 0x07
@@ -121,12 +126,12 @@ class IDX_index_header:
         self.num_indeces, = struct.unpack("<I", file_pointer.read(4))
 
         if verbose:
-            print "Magic: ", self.magic
-            print "Version: ", self.version
-            print "MD5 of index data: ", str(hex(self.md5hash)).strip('L')
-            print "Number of indeces: ", self.num_indeces
+            print("Magic: ", self.magic)
+            print("Version: ", self.version)
+            print("MD5 of index data: ", str(hex(self.md5hash)).strip('L'))
+            print("Number of indeces: ", self.num_indeces)
         
-class IDX_index_file:
+class IDX_index_file(object):
     def __init__(self, filepath=None):
         self.filepath = filepath
         self.header = None
@@ -139,7 +144,7 @@ class IDX_index_file:
 
     def open(self, filepath=None):
         if filepath == None and self.filepath == None:
-            print "File path is empty"
+            print("File path is empty")
             return
         if self.filepath == None:
             self.filepath = filepath    
@@ -150,11 +155,11 @@ class IDX_index_file:
             self.header.unpack(f, dest_filepath, verbose)
             for index in range(0, self.header.num_indeces):
                 if verbose:
-                    print "\tIndex: ", index
+                    print("\tIndex: ", index)
                 self.indeces.append(IDX_index().unpack(f, verbose))
             for index in range(0, self.header.num_indeces):
                 if verbose:
-                    print "Index: ", index
+                    print("Index: ", index)
                 self.entry_details.append(IDX_entry_details().unpack(f, verbose))
             self.bundles = IDX_bundles().unpack(f, verbose)
 

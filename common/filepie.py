@@ -14,7 +14,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
+from __future__ import division
+from __future__ import print_function
 
+from builtins import zip
+from past.utils import old_div
 import argparse
 import os
 import re
@@ -53,17 +57,17 @@ for root, dir, files in os.walk(path):
             else:
                 ext_dict[ext] = (1, fsize)
 
-for key,item in ext_dict.items():
-    print("{0:10}\t{1:10}\t{2:10}".format(key, item[0], int(item[1]/item[0])))
+for key,item in list(ext_dict.items()):
+    print("{0:10}\t{1:10}\t{2:10}".format(key, item[0], int(old_div(item[1],item[0]))))
 
 if not args.ext_only:    
-    files_counts = sorted(file_dict.items(), key=lambda x:x[1], reverse=True)     # list of tuples (path, size)
-    paths,sizes = zip(*files_counts)
+    files_counts = sorted(list(file_dict.items()), key=lambda x:x[1], reverse=True)     # list of tuples (path, size)
+    paths,sizes = list(zip(*files_counts))
 
     # plotting
-    labels = list(map(lambda x: os.path.basename(x), paths))
+    labels = list([os.path.basename(x) for x in paths])
     plt.figure(1, figsize=(6,6))
     plt.ax = plt.axes([0.1, 0.1, 0.8, 0.8])
     plt.pie(sizes, labels=labels)
-    plt.title("Directory: %s, file count: %s, total size(mb): %s" % (path, num_files, total_size/1024))
+    plt.title("Directory: %s, file count: %s, total size(mb): %s" % (path, num_files, old_div(total_size,1024)))
     plt.show()

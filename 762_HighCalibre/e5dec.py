@@ -11,6 +11,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
+from __future__ import print_function
 import argparse
 import os
 import sys
@@ -34,7 +35,7 @@ if __name__ == '__main__':
         print("File not TXT or src")
         sys.exit(0)
 
-    print("Output:", new_path)
+    print(("Output:", new_path))
     with open(args.filepath, "rb") as f:
         original_data = f.read()
         processed_data, next_key = symmetric_cipher(original_data, len(original_data), CIPHER_KEY)

@@ -1,3 +1,6 @@
+from __future__ import print_function
+from builtins import hex
+from builtins import range
 import argparse
 import numpy as np
 import matplotlib.pyplot as plt
@@ -36,17 +39,17 @@ if __name__ == '__main__':
     t1 = time.time()
     data = np.fromfile(f, np.dtype('u1'))
     t2 = time.time()
-    print "Time reading from binary file: ",  t2-t1
+    print("Time reading from binary file: ",  t2-t1)
 
-    print "data shape", data.shape
+    print("data shape", data.shape)
     padded_data = np.resize(data, data.shape[0] + (8 - (data.shape[0] % 8)))
-    print "padded data shape", padded_data.shape
+    print("padded data shape", padded_data.shape)
     new_data = np.reshape(padded_data, (-1, 8))
-    print "new_data shape", new_data.shape
+    print("new_data shape", new_data.shape)
     
     if debug:
         np.set_printoptions(formatter={'int':hex})
-        print new_data
+        print(new_data)
     
     # put the major ticks at the middle of each cell
     fig, ax = plt.subplots()
@@ -54,9 +57,9 @@ if __name__ == '__main__':
     t1 = time.time()
     ax.pcolormesh(new_data, cmap=mp)
     t2 = time.time()
-    print "Time to plot: ",  t2-t1
+    print("Time to plot: ",  t2-t1)
     
-    xlabels = map(lambda x: hex(x), range(0, 8))
+    xlabels = [hex(x) for x in range(0, 8)]
     #print xlabels
     # put the major ticks at the middle of each cell
     ax.set_xticks(np.arange(new_data.shape[1])+0.5, minor=False)
